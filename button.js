@@ -46,7 +46,7 @@ button.addEventListener('click', () => {
         popup = null;
         button.innerHTML = getChatIcon(); // Restore chat icon
     } else {
-        // Adjusted popup size
+        // Popup size (unchanged)
         let width, height;
         if (window.innerWidth <= 768) {
             width = 300;
@@ -59,9 +59,18 @@ button.addEventListener('click', () => {
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
 
-        // Adjust popup position dynamically
-        const left = Math.max(10, screenWidth - width - 20);
-        const top = Math.max(10, screenHeight - height - 80);
+        // Adjust popup position
+        const buttonBottom = 20; // Distance of button from bottom
+        const buttonHeight = parseInt(button.style.height); // Get button height
+        const popupBottom = buttonBottom + buttonHeight - height; // Align popup with button bottom
+
+        const buttonRight = 20; // Distance of button from right edge
+        const buttonWidth = parseInt(button.style.width); // Get button width
+        const extraSpacing = 20; // Additional spacing between button and popup
+
+        const popupRight = buttonRight + width + buttonWidth + extraSpacing; // Ensure popup is far enough left
+        const left = Math.max(10, screenWidth - popupRight);
+        const top = Math.max(10, screenHeight - height - popupBottom); // Align popup bottom with button bottom
 
         popup = window.open(
             '',
