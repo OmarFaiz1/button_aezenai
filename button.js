@@ -1,11 +1,11 @@
 // Create the chat button
 const button = document.createElement('button');
 button.innerHTML = getChatIcon(); // Set initial chat icon
+
+// Apply base styles
 button.style.position = 'fixed';
 button.style.right = '20px';
 button.style.bottom = '20px';
-button.style.width = '50px';
-button.style.height = '50px';
 button.style.backgroundColor = '#007bff';
 button.style.color = '#fff';
 button.style.border = 'none';
@@ -16,6 +16,23 @@ button.style.justifyContent = 'center';
 button.style.cursor = 'pointer';
 button.style.zIndex = '1000';
 button.style.boxShadow = '0px 4px 6px rgba(0, 0, 0, 0.1)';
+
+// Responsive styles
+function updateButtonStyle() {
+    if (window.innerWidth <= 768) { // Mobile & tablet adjustments
+        button.style.width = '45px';
+        button.style.height = '45px';
+        button.style.right = '15px';
+        button.style.bottom = '15px';
+    } else { // Desktop version (unchanged)
+        button.style.width = '50px';
+        button.style.height = '50px';
+    }
+}
+
+// Apply styles on load and resize
+updateButtonStyle();
+window.addEventListener('resize', updateButtonStyle);
 
 // Append the button to the body
 document.body.appendChild(button);
@@ -29,18 +46,26 @@ button.addEventListener('click', () => {
         popup = null;
         button.innerHTML = getChatIcon(); // Restore chat icon
     } else {
-        // Define the popup size
-        const width = 400, height = 550; // Reduced height to avoid overlapping button
+        // Adjusted popup size
+        let width, height;
+        if (window.innerWidth <= 768) {
+            width = 300;
+            height = 400;
+        } else {
+            width = 350;
+            height = 480;
+        }
+
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
 
-        // ** Adjust position so it never covers the button **
-        const left = screenWidth - width - 20;  // 20px margin from right
-        const top = screenHeight - height - 80; // 80px to stay above the button
+        // Adjust popup position dynamically
+        const left = Math.max(10, screenWidth - width - 20);
+        const top = Math.max(10, screenHeight - height - 80);
 
         popup = window.open(
-            '', 
-            'Chat Window', 
+            '',
+            'Chat Window',
             `width=${width},height=${height},left=${left},top=${top},scrollbars=no,resizable=no,menubar=no,toolbar=no,status=no`
         );
 
@@ -49,6 +74,7 @@ button.addEventListener('click', () => {
             popup.document.write(`
                 <html>
                 <head>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
                     <style>
                         body, html {
                             margin: 0;
