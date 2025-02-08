@@ -19,34 +19,30 @@ button.style.boxShadow = '0px 4px 6px rgba(0, 0, 0, 0.1)';
 
 // Responsive styles
 function updateButtonStyle() {
-    if (window.innerWidth <= 768) { // Mobile & tablet adjustments
+    if (window.innerWidth <= 768) {
         button.style.width = '45px';
         button.style.height = '45px';
         button.style.right = '15px';
         button.style.bottom = '15px';
-    } else { // Desktop version (unchanged)
+    } else {
         button.style.width = '50px';
         button.style.height = '50px';
     }
 }
 
-// Apply styles on load and resize
 updateButtonStyle();
 window.addEventListener('resize', updateButtonStyle);
 
-// Append the button to the body
 document.body.appendChild(button);
 
-let popup = null; // Variable to store the popup window
+let popup = null;
 
-// Add click event to the button
 button.addEventListener('click', () => {
     if (popup && !popup.closed) {
-        popup.close(); // Close the popup if it's open
+        popup.close();
         popup = null;
-        button.innerHTML = getChatIcon(); // Restore chat icon
+        button.innerHTML = getChatIcon();
     } else {
-        // Popup size (unchanged)
         let width, height;
         if (window.innerWidth <= 768) {
             width = 300;
@@ -59,18 +55,15 @@ button.addEventListener('click', () => {
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
 
-        // Adjust popup position
-        const buttonBottom = 20; // Distance of button from bottom
-        const buttonHeight = parseInt(button.style.height); // Get button height
-        const popupBottom = buttonBottom + buttonHeight - height; // Align popup with button bottom
-
-        const buttonRight = 20; // Distance of button from right edge
-        const buttonWidth = parseInt(button.style.width); // Get button width
-        const extraSpacing = 20; // Additional spacing between button and popup
-
-        const popupRight = buttonRight + width + buttonWidth + extraSpacing; // Ensure popup is far enough left
+        const buttonBottom = 20;
+        const buttonHeight = parseInt(button.style.height);
+        const popupBottom = buttonBottom + buttonHeight - height;
+        const buttonRight = 20;
+        const buttonWidth = parseInt(button.style.width);
+        const extraSpacing = 20;
+        const popupRight = buttonRight + width + buttonWidth + extraSpacing;
         const left = Math.max(10, screenWidth - popupRight);
-        const top = Math.max(10, screenHeight - height - popupBottom); // Align popup bottom with button bottom
+        const top = Math.max(10, screenHeight - height - popupBottom);
 
         popup = window.open(
             '',
@@ -79,7 +72,6 @@ button.addEventListener('click', () => {
         );
 
         if (popup) {
-            // Write an iframe and footer directly to the popup document
             popup.document.write(`
                 <html>
                 <head>
@@ -97,6 +89,7 @@ button.addEventListener('click', () => {
                             flex: 1;
                             width: 100%;
                             border: none;
+                            position: relative;
                         }
                         .footer {
                             text-align: center;
@@ -109,26 +102,54 @@ button.addEventListener('click', () => {
                             color: #007bff;
                             text-decoration: none;
                         }
+                        .floating-btn {
+                            position: absolute;
+                            bottom: 44px;
+                            left: 9px;
+                            width: 30px;
+                            height: 30px;
+                            background: blue;
+                            color: white;
+                            border: none;
+                            border-radius: 50%;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 16px;
+                            font-weight: bold;
+                            user-select: none;
+                            pointer-events: auto; /* Ensure it captures all clicks */
+                        }
                     </style>
                 </head>
                 <body>
                     <iframe src="https://chat.aezenai.com?aid=af2a896a-5517-48eb-b8f3-014eec338f38&lang=en"></iframe>
+                    <button class="floating-btn" id="floating-btn">+</button>
                     <div class="footer">
                         Powered by <a href="https://aezenai.com" target="_blank">aezenai.com</a>
                     </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            let floatingBtn = document.getElementById("floating-btn");
+
+                            floatingBtn.addEventListener("click", function (event) {
+                                event.preventDefault(); // Prevents any default behavior
+                                event.stopImmediatePropagation(); // Ensures only this event runs
+                                window.location.href = "https://siliconpix.com"; // Redirects user
+                            });
+                        });
+                    </script>
+
                 </body>
                 </html>
             `);
             popup.document.close();
-
-            // Change button icon to "X" when chat is opened
             button.innerHTML = getCloseIcon();
-
-            // Detect when popup is closed to restore chat icon
             popup.onbeforeunload = () => {
                 button.innerHTML = getChatIcon();
             };
-
             popup.focus();
         } else {
             alert('Popup blocked. Please enable popups for this site.');
@@ -136,21 +157,15 @@ button.addEventListener('click', () => {
     }
 });
 
-// Function to get the chat icon (blue chat bubble)
 function getChatIcon() {
-    return `
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-        </svg>
-    `;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>`;
 }
 
-// Function to get the close (X) icon
 function getCloseIcon() {
-    return `
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-    `;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>`;
 }
