@@ -137,7 +137,7 @@ button.addEventListener('click', () => {
                             floatingBtn.addEventListener("click", function (event) {
                                 event.preventDefault(); // Prevents any default behavior
                                 event.stopImmediatePropagation(); // Ensures only this event runs
-                                window.location.href = "https://siliconpix.com"; // Redirects user
+                                window.location.href = "https://dockerautomation-production.up.railway.app/"; // Redirects user
                             });
                         });
                     </script>
