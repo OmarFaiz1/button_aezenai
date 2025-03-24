@@ -17,143 +17,78 @@ button.style.cursor = 'pointer';
 button.style.zIndex = '1000';
 button.style.boxShadow = '0px 4px 6px rgba(0, 0, 0, 0.1)';
 
+// Create iframe container
+const iframeContainer = document.createElement('div');
+iframeContainer.style.position = 'fixed';
+iframeContainer.style.right = '20px';
+iframeContainer.style.bottom = '80px';
+iframeContainer.style.width = '350px';
+iframeContainer.style.height = '480px';
+iframeContainer.style.background = '#fff';
+iframeContainer.style.borderRadius = '8px';
+iframeContainer.style.boxShadow = '0px 4px 6px rgba(0, 0, 0, 0.1)';
+iframeContainer.style.zIndex = '999';
+iframeContainer.style.display = 'none';
+iframeContainer.style.overflow = 'hidden';
+
 // Responsive styles
-function updateButtonStyle() {
+function updateStyles() {
     if (window.innerWidth <= 768) {
         button.style.width = '45px';
         button.style.height = '45px';
         button.style.right = '15px';
         button.style.bottom = '15px';
+        iframeContainer.style.width = '300px';
+        iframeContainer.style.height = '400px';
+        iframeContainer.style.right = '15px';
+        iframeContainer.style.bottom = '70px';
     } else {
         button.style.width = '50px';
         button.style.height = '50px';
+        iframeContainer.style.width = '350px';
+        iframeContainer.style.height = '480px';
     }
 }
 
-updateButtonStyle();
-window.addEventListener('resize', updateButtonStyle);
+updateStyles();
+window.addEventListener('resize', updateStyles);
+
+// Create iframe content
+iframeContainer.innerHTML = `
+    <iframe id="chat-iframe" src="https://chat.aezenai.com?aid=af2a896a-5517-48eb-b8f3-014eec338f38&lang=en" 
+            style="width: 100%; height: calc(100% - 30px); border: none;"></iframe>
+    <div style="text-align: center; padding: 5px; font-size: 14px; background: #f1f1f1; color: #333;">
+        Powered by <a href="https://aezenai.com" target="_blank" style="color: #007bff; text-decoration: none;">aezenai.com</a>
+    </div>
+    <button id="floating-btn" 
+            style="position: absolute; bottom: 40px; left: 9px; width: 30px; height: 30px; 
+                   background: blue; color: white; border: none; border-radius: 50%; 
+                   cursor: pointer; display: flex; align-items: center; justify-content: center; 
+                   font-size: 16px; font-weight: bold;">+</button>
+`;
 
 document.body.appendChild(button);
+document.body.appendChild(iframeContainer);
 
-let popup = null;
+// Add floating button functionality
+const floatingBtn = iframeContainer.querySelector('#floating-btn');
+const chatIframe = iframeContainer.querySelector('#chat-iframe');
+
+floatingBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    chatIframe.src = "https://dockerautomation-production.up.railway.app/";
+});
+
+let isOpen = false;
 
 button.addEventListener('click', () => {
-    if (popup && !popup.closed) {
-        popup.close();
-        popup = null;
-        button.innerHTML = getChatIcon();
+    isOpen = !isOpen;
+    if (isOpen) {
+        iframeContainer.style.display = 'block';
+        button.innerHTML = getCloseIcon();
     } else {
-        let width, height;
-        if (window.innerWidth <= 768) {
-            width = 300;
-            height = 400;
-        } else {
-            width = 350;
-            height = 480;
-        }
-
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
-
-        const buttonBottom = 20;
-        const buttonHeight = parseInt(button.style.height);
-        const popupBottom = buttonBottom + buttonHeight - height;
-        const buttonRight = 20;
-        const buttonWidth = parseInt(button.style.width);
-        const extraSpacing = 20;
-        const popupRight = buttonRight + width + buttonWidth + extraSpacing;
-        const left = Math.max(10, screenWidth - popupRight);
-        const top = Math.max(10, screenHeight - height - popupBottom);
-
-        popup = window.open(
-            '',
-            'Chat Window',
-            `width=${width},height=${height},left=${left},top=${top},scrollbars=no,resizable=no,menubar=no,toolbar=no,status=no`
-        );
-
-        if (popup) {
-            popup.document.write(`
-                <html>
-                <head>
-                    <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <style>
-                        body, html {
-                            margin: 0;
-                            padding: 0;
-                            overflow: hidden;
-                            height: 100%;
-                            display: flex;
-                            flex-direction: column;
-                        }
-                        iframe {
-                            flex: 1;
-                            width: 100%;
-                            border: none;
-                            position: relative;
-                        }
-                        .footer {
-                            text-align: center;
-                            padding: 8px;
-                            font-size: 14px;
-                            background: #f1f1f1;
-                            color: #333;
-                        }
-                        .footer a {
-                            color: #007bff;
-                            text-decoration: none;
-                        }
-                        .floating-btn {
-                            position: absolute;
-                            bottom: 44px;
-                            left: 9px;
-                            width: 30px;
-                            height: 30px;
-                            background: blue;
-                            color: white;
-                            border: none;
-                            border-radius: 50%;
-                            cursor: pointer;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 16px;
-                            font-weight: bold;
-                            user-select: none;
-                            pointer-events: auto; /* Ensure it captures all clicks */
-                        }
-                    </style>
-                </head>
-                <body>
-                    <iframe src="https://chat.aezenai.com?aid=af2a896a-5517-48eb-b8f3-014eec338f38&lang=en"></iframe>
-                    <button class="floating-btn" id="floating-btn">+</button>
-                    <div class="footer">
-                        Powered by <a href="https://aezenai.com" target="_blank">aezenai.com</a>
-                    </div>
-
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function () {
-                            let floatingBtn = document.getElementById("floating-btn");
-
-                            floatingBtn.addEventListener("click", function (event) {
-                                event.preventDefault(); // Prevents any default behavior
-                                event.stopImmediatePropagation(); // Ensures only this event runs
-                                window.location.href = "https://dockerautomation-production.up.railway.app/"; // Redirects user
-                            });
-                        });
-                    </script>
-
-                </body>
-                </html>
-            `);
-            popup.document.close();
-            button.innerHTML = getCloseIcon();
-            popup.onbeforeunload = () => {
-                button.innerHTML = getChatIcon();
-            };
-            popup.focus();
-        } else {
-            alert('Popup blocked. Please enable popups for this site.');
-        }
+        iframeContainer.style.display = 'none';
+        button.innerHTML = getChatIcon();
     }
 });
 
